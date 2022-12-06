@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Geotab Buddy",
+  "description": "Buddy to assist geotab employees",
+  "version": "1",
+  "action": {
+      "default_popup": "index.html",
+      "default_title": "GeoBuddy"
+  }
+  
+}
