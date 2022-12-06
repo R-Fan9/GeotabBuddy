@@ -1,4 +1,3 @@
-console.log("begin");
 document.getElementById("QA_form").addEventListener("submit", getValues);
 
 function getValues() {
