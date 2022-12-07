@@ -55,8 +55,10 @@ exports.updateFAQDoc = async (eventData, context, callback) => {
     documentId: '1Tnc4vvsMgxbsGQKdshsUmPWVhrz2MXbQMCl75NTeXlM',
     fields: 'body/content'
   });
+  console.log(doc);
 
   const endIndex = doc.data.body.content.at(-1).endIndex;
+  console.log(endIndex);
   
   const res = await elasticClient.search({
     index: "questions",
@@ -66,7 +68,9 @@ exports.updateFAQDoc = async (eventData, context, callback) => {
   });
 
   const respBody = res.hits.hits;
+  console.log(respBody);
 
+  let docContent = "";
   respBody.forEach(entry => {
     const question = entry._source.question;
     const answer = entry._source.answer;
@@ -76,6 +80,7 @@ exports.updateFAQDoc = async (eventData, context, callback) => {
     docContent += "\n";
     
   });
+  console.log(docContent);
 
   await googleDoc.documents.batchUpdate({
     documentId: '1Tnc4vvsMgxbsGQKdshsUmPWVhrz2MXbQMCl75NTeXlM',
@@ -101,4 +106,6 @@ exports.updateFAQDoc = async (eventData, context, callback) => {
     }
   });
 
+  console.log("Job Completed Successfully");
+  return;
 }
