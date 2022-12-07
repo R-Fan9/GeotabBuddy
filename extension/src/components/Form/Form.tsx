@@ -53,7 +53,8 @@ export default function Form() {
 
     const handleSubmit = async () => {
         console.log(questionAnswers);
-        if (questionAnswers.length == 0) {
+        const first: any = questionAnswers[0];
+        if (first == undefined || currentQuestion != first._source.question) {
             try {
                 await axios({
                     method: "post",
@@ -81,6 +82,7 @@ export default function Form() {
                 console.error(error);
             }
         }
+        window.close();
     }
 
     const handleAnswer = (event: any) => {
