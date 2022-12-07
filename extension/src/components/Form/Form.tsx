@@ -42,6 +42,7 @@ export default function Form() {
                 url: `${BASE_URL}/question?search=${event.target.outerText}`,
             });
             const result = response.data;
+            console.log(result);
             setQuestionAnswers(result);
             setCurrentQuestion(result[0]._source.question);
             setCurrentAnswer(result[0]._source.answer);

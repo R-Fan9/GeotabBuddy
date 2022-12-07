@@ -28,8 +28,8 @@ app.patch("/question", async (req, res) => {
 });
 
 app.get("/question", async (req, res) => {
-  const regexStr = `*${req.query.search}*`;
-
+  const regexStr = `*${req.query.search.replace(/[^a-zA-Z0-9 ]/g, '')}*`;
+  console.log(regexStr);
   const result = await elasticClient.search({
     index: "questions",
     query: {
