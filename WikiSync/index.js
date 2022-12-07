@@ -3,7 +3,7 @@ const { PubSub } = require("@google-cloud/pubsub");
 const { getAllDocIds, getDocText, syncDocToES } = require("./docESsync");
 const { parseTextToJson } = require("./utils");
 
-const scopes = ["https://www.googleapis.com/auth/drive"];
+const scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/documents"];
 
 const auth = new google.auth.GoogleAuth({
   scopes: scopes,
@@ -46,3 +46,4 @@ exports.docElasticSearchSync = async (req, res) => {
     console.error(error);
   }
 };
+
