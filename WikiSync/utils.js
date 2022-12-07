@@ -1,7 +1,12 @@
 exports.parseTextToJson = (text) => {
-  return [
-    { question: "How are you?", answer: "I'm fine" },
-    { question: "What is your name", answer: "My name is Ricky." },
-    { question: "What is Geotab", answer: "A telematic company" },
-  ];
+  const sections = text.split("\r\n");
+
+  let result = []
+  for (let i = 0; i < sections.length; i+=4) {
+    result.push({
+      question: sections[i], answer: sections[i+1]
+    });
+  }
+  return result;
 };
+
