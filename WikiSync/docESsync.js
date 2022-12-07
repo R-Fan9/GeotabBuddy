@@ -1,5 +1,4 @@
 const { google } = require("googleapis");
-const { parseTextToJson } = require("./utils");
 
 const elasticClient = require("./elastic-client");
 
@@ -53,7 +52,7 @@ const getQuestionId = async (question) => {
   const questions = res.hits.hits;
 
   if (questions.length == 0) {
-    console.log("no questions match");
+    console.log("no questions match")
     return null;
   }
 
