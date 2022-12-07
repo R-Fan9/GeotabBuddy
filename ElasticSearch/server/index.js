@@ -1,10 +1,11 @@
 const express = require("express");
+const cors = require('cors');
 const bodyParser = require("body-parser");
 const elasticClient = require("./elastic-client");
 require("express-async-errors");
 
 const app = express();
-
+app.use(cors());
 app.use(bodyParser.json());
 
 app.post("/question", async (req, res) => {
@@ -40,6 +41,7 @@ app.get("/question", async (req, res) => {
   });
 
   res.json(result.hits.hits);
+  
 });
 
 app.listen(8080);
