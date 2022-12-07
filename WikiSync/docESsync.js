@@ -1,8 +1,9 @@
-const { default: axios } = require("axios");
 const { google } = require("googleapis");
+const { parseTextToJson } = require("./utils");
 
-const google_doc_api = "https://docs.googleapis.com/v1/documents/";
-const scopes = ["https://www.googleapis.com/auth/drive.metadata.readonly"];
+const elasticClient = require("./elastic-client");
+
+const scopes = ["https://www.googleapis.com/auth/drive"];
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "service-account.json",
@@ -10,48 +11,83 @@ const auth = new google.auth.GoogleAuth({
 });
 const googleDrive = google.drive({ version: "v3", auth });
 
-const docs = [
-  "https://docs.google.com/document/d/1gdNchPnyyz6vSasbtHWjn_IWDTpKa1a0t-VOiJGeqFE/edit",
-];
+exports.getAllDocIds = async (drive) => {
+  const res = await drive.files.list({
+    fields: "nextPageToken, files(id)",
+  });
+  const fileIds = res.data.files;
+  if (fileIds.length === 0) {
+    console.log("No files found.");
+    return;
+  }
 
-const getDocId = (docUrl) => {
-  const result = docUrl.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
-
-  return result[1];
+  return fileIds;
 };
 
-const getDocContent = async (docId) => {
+exports.getDocText = async (drive, docId) => {
   try {
-    const res = await googleDrive.files.list({
-      pageSize: 10,
-      fields: "nextPageToken, files(id, name)",
+    const doc = await drive.files.export({
+      fileId: docId,
+      mimeType: "text/plain",
     });
-    const files = res.data.files;
-    if (files.length === 0) {
-      console.log("No files found.");
-      return;
-    }
+    const docText = doc.data;
 
-    console.log("Files:");
-    files.map((file) => {
-      console.log(`${file.name} (${file.id})`);
-    });
-
-    // googleDrive.
-    // const response = await axios({
-    //   method: "get",
-    //   url: `${google_doc_api}${docId}`,
-    // });
-
-    // return response.data;
+    return docText;
   } catch (error) {
     console.error(error);
   }
 };
 
-docs.forEach((doc) => {
-  const docId = getDocId(doc);
-  const docContent = getDocContent(docId);
+const getQuestionId = async (question) => {
+  const res = await elasticClient.search({
+    index: "questions",
+    query: {
+      match: {
+        question: {
+          query: question,
+        },
+      },
+    },
+  });
 
-  console.log(docContent);
-});
+  const questions = res.hits.hits;
+
+  if (questions.length == 0) {
+    console.log("no questions match");
+    return null;
+  }
+
+  return questions[0]._id;
+};
+
+const updateAnswer = async (questionId, answer) => {
+  const res = await elasticClient.update({
+    index: "questions",
+    id: questionId,
+    doc: { answer },
+  });
+
+  console.log(`updated question ${questionId}`, res);
+};
+
+const insertQA = async (doc) => {
+  const res = await elasticClient.index({
+    index: "questions",
+    document: doc,
+  });
+
+  console.log(`inserted question and answer ${res._id}`, res);
+};
+
+exports.syncDocToES = async (docJson) => {
+  for (var i = 0; i < docJson.length; i++) {
+    const docQA = docJson[i];
+    const questionId = await getQuestionId(docQA.question);
+
+    if (questionId != null) {
+      updateAnswer(questionId, docQA.answer);
+    } else {
+      insertQA(docQA);
+    }
+  }
+};

@@ -55,7 +55,7 @@ const getQuestions = async (text) => {
   }
 };
 
-getQuestions("bob");
+getQuestions("how");
 
 // updateQuestion(q1);
 // createQuestion(q1);
