@@ -49,7 +49,8 @@ exports.docElasticSearchSync = async (req, res) => {
 };
 
 exports.updateFAQDoc = async (eventData, context, callback) => {
-  const googleDoc = google.docs({ version: 'v1', auth });
+  const authClient = await auth.getClient();
+  const googleDoc = google.docs({ version: 'v1', auth: authClient});
   const doc = await googleDoc.documents.get({
     documentId: '1Tnc4vvsMgxbsGQKdshsUmPWVhrz2MXbQMCl75NTeXlM',
     fields: 'body/content'
@@ -66,7 +67,6 @@ exports.updateFAQDoc = async (eventData, context, callback) => {
 
   const respBody = res.hits.hits;
 
-  let docContent = "FAQ Questions\n\n";
   respBody.forEach(entry => {
     const question = entry._source.question;
     const answer = entry._source.answer;
