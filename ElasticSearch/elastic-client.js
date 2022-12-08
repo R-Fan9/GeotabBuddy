@@ -1,6 +1,6 @@
 const { Client } = require("@elastic/elasticsearch");
 
-require("dotenv").config({ path: ".elastic.env" });
+require("dotenv").config();
 
 const elasticClient = new Client({
   cloud: {
