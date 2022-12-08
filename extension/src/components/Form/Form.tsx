@@ -9,7 +9,8 @@ export default function Form() {
     const [currentAnswer, setCurrentAnswer] = useState("");
     const [answerLabel, setAnswerLabel] = useState("Answer");
     
-    const BASE_URL = "http://localhost:8080";
+    // const BASE_URL = "http://localhost:8080";
+    const BASE_URL = "https://haozheng-fan.uc.r.appspot.com";
 
     
     const handleNewInput = async (event: any) => {
